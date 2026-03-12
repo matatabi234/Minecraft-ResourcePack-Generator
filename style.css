@@ -1,0 +1,403 @@
+body { margin: 0; display: flex; height: 100vh; background: #222; color: white; }
+
+/* 左側：インベントリ */
+#inventory-pane {
+    width: 200px;
+    background: #111;
+    border-right: 2px solid #444;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* 右側：メイン編集エリア */
+#main-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+/* 既存のキャンバス・コントロールの配置調整 */
+#editor-section { display: flex; flex-direction: column; align-items: center; }
+#canvas { width: 256px; height: 256px; image-rendering: pixelated; border: 4px solid #fff; background: white; }
+
+/* ツールと色のエリア */
+#controls { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#tools { display: flex; gap: 5px; }
+
+#app-container {
+    display: flex; /* これで左・中・右に並びます */
+    height: 100vh;
+}
+
+#gallery-section { width: 200px; background: #111; }
+#editor-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+#toolbox { width: 150px; background: #333; }
+
+/* インベントリの全体エリア */
+#gallery-section {
+    width: 200px;         /* 幅を確保して余裕を持たせる */
+    background: #111;
+    display: flex;
+    flex-direction: column; /* 縦並びにする */
+    align-items: center;    /* 中央寄せ */
+    padding: 10px;
+    gap: 10px;              /* 要素同士の隙間 */
+    overflow-y: auto;       /* はみ出したら縦スクロール */
+}
+
+/* 追加ボタンのスタイル */
+#addBtn {
+    width: 100%;
+    padding: 10px;
+    background: #444;
+    color: white;
+    border: 1px solid #666;
+    cursor: pointer;
+}
+
+/* 各ブロックのサムネイル */
+.thumb {
+    width: 180px;           /* 少し横幅を広げる */
+    height: 60px;           /* 高さを抑えてリストっぽく */
+    background: #333;
+    display: flex;          /* 横並びにする */
+    align-items: center;
+    padding: 5px 10px;
+    gap: 10px;              /* アイコンと名前の隙間 */
+    cursor: pointer;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;     /* 削除ボタン配置のため */
+}
+
+/* 画像と名前のサイズ調整 */
+.thumb img { width: 40px; height: 40px; }
+.thumb span { font-size: 14px; }
+
+#app-container {
+    display: flex; /* 横並びにする */
+    height: 100vh;
+    overflow: hidden;
+}
+
+#left-sidebar { width: 200px; background: #111; overflow-y: auto; border-right: 2px solid #444; }
+#main-area { flex: 1; display: flex; justify-content: center; align-items: center; }
+#right-sidebar { width: 150px; background: #333; border-left: 2px solid #444; padding: 10px; }
+
+/* キャンバスを大きく表示 */
+#canvas {
+    width: 512px; height: 512px;
+    image-rendering: pixelated;
+    border: 4px solid #fff;
+}
+
+/* 追加してください */
+.modal {
+    display: none; /* ← これが重要 */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+}
+
+#app-container {
+    display: flex;
+    height: 100vh;
+}
+
+#gallery-section {
+    width: 300px; /* ここを大きくすれば左側が広がる */
+    background: #111;
+    overflow-y: auto;
+}
+
+/* モーダル自体を画面中央にしっかり固定 */
+.modal-content {
+    background: #2b2b2b;
+    margin: 5% auto; /* 上からの余白 */
+    padding: 20px;
+    width: 80%;      /* 画面幅の80%を使う */
+    max-width: 800px; /* 広げすぎない制限 */
+    max-height: 80vh; /* 高さ制限 */
+    overflow-y: auto; /* アイテムが増えたらここがスクロール */
+    border: 2px solid #555;
+    text-align: center;
+}
+
+/* グリッドレイアウトの設定 */
+#blockSelector {
+    display: grid;
+    /* 横に5個並ぶように設定 */
+    grid-template-columns: repeat(5, 1fr); 
+    gap: 15px;      /* アイテム間の隙間 */
+    padding: 20px;
+}
+
+/* 個々のアイテムを整える */
+.modal-item {
+    background: #333;
+    padding: 10px;
+    border: 2px solid #444;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column; /* アイコンを上に、名前を下に */
+    align-items: center;
+    border-radius: 8px;
+    transition: transform 0.1s;
+}
+
+.modal-item:hover {
+    background: #555;
+    transform: scale(1.05); /* ホバーで少し大きく */
+}
+
+.modal-item img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 5px;
+}
+
+#canvas {
+    /* 透過背景設定 */
+    background-image: 
+        linear-gradient(45deg, #ccc 25%, transparent 25%), 
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    
+    /* ぼけ防止 */
+    image-rendering: pixelated;
+    width: 512px;
+    height: 512px;
+}
+
+/* すべての画像とキャンバスのぼけを防止 */
+img, canvas, .modal-item img, .thumb img {
+    image-rendering: -moz-crisp-edges;         /* Firefox */
+    image-rendering: -webkit-optimize-contrast; /* Safari */
+    image-rendering: pixelated;                /* Chrome, Edge */
+}
+
+/* 左側のインベントリ全体 */
+#gallery-section {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;        /* アイテム同士の間隔 */
+    background: #222;
+    border-right: 1px solid #444;
+}
+
+/* インベントリの各アイテムの基本設定 */
+.thumb {
+    position: relative;
+    border: 2px solid transparent; /* 最初は枠なし（透明） */
+    transition: border 0.2s;        /* 枠の色が変わるアニメーション */
+    cursor: pointer;
+}
+
+/* 選択された時のスタイル */
+.thumb.selected {
+    border-color: #4caf50;          /* 緑色の枠 */
+    background: #444;               /* 少し明るくして強調 */
+    box-shadow: 0 0 5px #4caf50;    /* ぼんやり光らせてさらに目立たせる */
+}
+
+/* ツールエリア */
+#toolbox {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 横2列に並べる */
+    gap: 8px;
+    padding: 10px;
+}
+
+/* ツールボタン */
+.tool-btn {
+    padding: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+/* インベントリの全体エリア */
+#gallery-section {
+    width: 240px;
+    background: #252525;
+    padding: 10px;
+}
+
+/* 各ブロックを「一つの箱」にする */
+.thumb-container {
+    display: flex;
+    align-items: center;
+    background: #333;
+    margin-bottom: 8px;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #444;
+}
+
+/* 削除ボタンを左端に配置 */
+.delete-btn {
+    margin-right: 10px;
+    color: #ff6666;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* ツールエリア全体 */
+#toolbox {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 横に4つ並べる */
+    gap: 5px;
+    padding: 10px;
+}
+
+.tool-btn {
+    width: 45px;
+    height: 45px;
+    padding: 5px;
+    background: #444;
+    border: 1px solid #666;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ボタン内の画像をボタンサイズに合わせる */
+.tool-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* アスペクト比を維持 */
+}
+
+/* 選択時のハイライト */
+.tool-btn.active {
+    background: #28a745; /* 緑色 */
+    border-color: #fff;
+}
+
+.tool-btn {
+    width: 45px; height: 45px;
+    background: #444;
+    border: 2px solid #555;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* 選択されているとき（activeクラス） */
+.tool-btn.active {
+    border-color: #4caf50; /* 枠を緑に */
+    background: #333;
+}
+
+/* 選択されている時の画像（緑色に変換） */
+.tool-btn.active img {
+    /* ここで緑色に変換 */
+    filter: invert(60%) sepia(85%) saturate(1352%) hue-rotate(80deg) brightness(100%) contrast(100%);
+}
+
+/* 全体のレイアウト */
+#app-container {
+    display: flex;
+    height: 100vh; /* 画面いっぱいに広げる */
+    overflow: hidden;
+}
+
+/* メイン編集エリア（左側） */
+#editor-section {
+    flex: 1; /* 残りのスペースをすべて使う */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+}
+
+/* コントロールパネル（右側） */
+#control-panel {
+    width: 250px;
+    background: #333; /* ダークモード風 */
+    color: white;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* ボタンのデザイン */
+button {
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background: #555;
+    color: white;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #777;
+}
+
+/* 特定のボタンの色分け */
+#saveBtn { background: #28a745; }
+#saveBtn:hover { background: #218838; }
+
+#exportBtn { background: #007bff; }
+#exportBtn:hover { background: #0069d9; }
+
+/* モーダルのセンター配置 */
+#export-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+}
+
+.modal-content {
+    background: white;
+    color: #333;
+    width: 350px;
+    margin: 15% auto; /* 画面中央に配置 */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.mozi{
+    color: #333;
+}
+
+/* モーダル全体の設定 */
+.modal-content {
+    background-color: #333; /* 背景を暗く */
+    color: #ffffff;         /* 文字色を白に */
+    padding: 20px;
+    border-radius: 12px;
+}
+
+/* 見出し「ブロックを選択」はそのままの濃い色にする場合 */
+.modal-content h2 {
+    color: #ffffff; /* 見出しも白にするならここを白に */
+}
+
+/* もし「ブロックを選択」だけ黒っぽくしたいなら、個別に指定 */
+#blockModal h2 {
+    color: #333; 
+    background-color: #eee; /* 背景を明るくして文字を黒くする */
+    padding: 10px;
+    border-radius: 8px;
+}

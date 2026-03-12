@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>テクスチャ・エディタ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app-container" style="display: flex;">
+    <div id="main-area">
+        </div>
+
+    <div id="control-panel" style="width: 200px; padding: 20px; border-left: 1px solid #ccc;">
+        <h3>テクスチャ管理</h3>
+        
+        <button id="saveBtn" style="width: 100%; margin-bottom: 10px;">セーブ</button>
+        
+        <hr>
+        
+        <h3>エクスポート</h3>
+        <button id="exportBtn" style="width: 100%;">ZIPとして出力</button>
+        
+        </div>
+</div>
+<div id="export-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="background: white; width: 350px; margin: 100px auto; padding: 25px; border-radius: 12px; font-family: sans-serif;">
+        <h3 style="margin-top: 0;">リソースパックの書き出し</h3>
+        
+        <p style="font-size: 0.9em; color: #666;">マイクラに読み込ませる際のパック名とバージョンを設定してください。</p>
+
+        <label style="display: block; margin-bottom: 15px;">
+            <strong>パック名:</strong><br>
+            <input type="text" id="modal-pack-name" placeholder="例: MyTexturePack" style="width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box;">
+        </label>
+
+        <label style="display: block; margin-bottom: 20px;">
+            <strong>対象のマイクラバージョン:</strong><br>
+            <select id="modal-pack-format" style="width: 100%; padding: 8px; margin-top: 5px;">
+                <option value="42">1.21.x (Format 42)</option>
+                <option value="15">1.20.1 (Format 15)</option>
+            </select>
+        </label>
+
+        <div style="text-align: right;">
+            <button id="modal-cancel" style="padding: 8px 16px; margin-right: 10px;">キャンセル</button>
+            <button id="modal-export" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">ZIP生成</button>
+        </div>
+    </div>
+</div>
+<div id="app-container">
+    <aside id="gallery-section">
+        <button id="addBtn">＋ ブロックを追加</button>
+        <div id="galleryList"></div>
+    </aside>
+
+    <main id="editor-section">
+        <canvas id="canvas" width="16" height="16"></canvas>
+        <p class="mozi">テクスチャ編集エリア</p>
+        <div class="control-group">
+            
+            <label for="colorPicker" class="mozi">色を選択:</label>
+            <input type="color" id="colorPicker" value="#000000">
+        </div>
+    </main>
+    
+    
+
+<aside id="toolbox">
+    <h3>描画</h3>
+    <div class="tool-grid">
+        <button class="tool-btn" data-tool="pen"><img src="icons/pen.png" alt="ペン"></button>
+        <button class="tool-btn" data-tool="line"><img src="icons/line.png" alt="直線"></button>
+        <button class="tool-btn" data-tool="fill"><img src="icons/fill.png" alt="塗りつぶし"></button>
+        <button class="tool-btn" data-tool="eraser"><img src="icons/eraser.png" alt="消しゴム"></button>
+        <button class="tool-btn" data-tool="all eraser"><img src="icons/all eraser.png" alt="全消し"></button>
+    </div>
+</aside>
+</div>
+
+<div id="blockModal" class="modal">
+    <div class="modal-content">
+        <h2>ブロックを選択</h2>
+        <div id="blockSelector"></div>
+        <button onclick="document.getElementById('blockModal').style.display='none'">閉じる</button>
+    </div>
+</div>
+
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <p>本当に削除しますか？</p>
+        <button id="confirmYes">削除する</button>
+        <button id="confirmNo">キャンセル</button>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script type="module" src="js/script.js"></script>
+<script type="module" src="js/paint.js"></script>
+<script type="module" src="js/tools.js"></script>
+<script type="module" src="js/save.js"></script>
+</body>
+</html>

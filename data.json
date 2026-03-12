@@ -1,0 +1,4 @@
+[
+    { "name": "石", "category": "blocks", "url": "textures/blocks/stone.png" },
+    { "name": "リンゴ", "category": "items", "url": "textures/items/apple.png" }
+]
