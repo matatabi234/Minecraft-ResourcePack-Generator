@@ -9,3 +9,10 @@ a/
 # 特定の拡張子をすべて無視
 # *.xlsx
 # *.log
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
