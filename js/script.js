@@ -188,7 +188,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
     exportModal.style.display = 'none';
     
     // 【重要】ここで textureList を引数として渡す！
-    generateZipWithSettings(packName, format, textureList); 
+    generateZipWithSettings(packName, 34, textureList); 
     });
     // ボタンのクリックイベント設定
     toolBtns.forEach(btn => {
