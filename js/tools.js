@@ -1,9 +1,12 @@
 // tools.js
 export const tools = {
     pen: {
-        draw(ctx, x, y, color) {
+        draw(ctx, x, y, color, size = 1) {
             ctx.fillStyle = color;
-            ctx.fillRect(x, y, 1, 1);
+            const s = parseInt(size);
+            const offset = Math.floor(s / 2);
+            // 指定サイズで塗りつぶし
+            ctx.fillRect(x - offset, y - offset, s, s);
         }
     },
     line: {

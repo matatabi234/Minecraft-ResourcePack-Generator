@@ -73,10 +73,27 @@
         <button class="tool-btn" data-tool="fill"><img src="icons/fill.png" alt="塗りつぶし"></button>
         <button class="tool-btn" data-tool="eraser"><img src="icons/eraser.png" alt="消しゴム"></button>
         <button class="tool-btn" data-tool="all eraser"><img src="icons/all eraser.png" alt="全消し"></button>
+        <button id="undoBtn"><img src="icons/undo.png" alt="元に戻す"></button>
+        <button id="redoBtn"><img src="icons/redo.png" alt="やり直し"></button>
+        <!-- <button id="gridBtn">グリッド切替</button> -->
     </div>
+    <div id="controls">
+    <div id="tools">
+        </div>
+    
+    <label for="brushSize">ブラシサイズ:</label>
+    <select id="brushSize">
+        <option value="1">1px</option>
+        <option value="2">2px</option>
+        <option value="3">3px</option>
+        <option value="4">4px</option>
+    </select>
+</div>
 </aside>
 </div>
-
+<!-- <div id="canvas-wrapper" class="canvas-container">
+    <canvas id="canvas"></canvas>
+    <div class="grid-overlay"></div> </div> -->
 <div id="blockModal" class="modal">
     <div class="modal-content">
         <h2>ブロックを選択</h2>

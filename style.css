@@ -475,3 +475,8 @@ button:hover {
     image-rendering: pixelated; /* マイクラ画像がボケないように */
     margin-bottom: 5px;
 }
+
+.canvas-container {
+    position: relative;
+    image-rendering: pixelated; /* ドットをぼかさない */
+}

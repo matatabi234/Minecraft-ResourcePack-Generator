@@ -5,21 +5,23 @@ const blockSelector = document.getElementById('blockSelector');
 const confirmModal = document.getElementById('confirmModal');
 let itemToRemove = null; 
 let selectedDiv = null;
+import { saveState, undo, redo } from './undo_redo.js';
+import { undo as performUndo, redo as performRedo, saveState as recordNewState } from './undo_redo.js';
 
 const exportModal = document.getElementById('export-modal');
 const modalExportBtn = document.getElementById('modal-export');
 
 document.getElementById('modal-cancel').onclick = () => modal.style.display = 'none';
-
 // 【重要】関数の外で取得しておく
 
 export let textureList = [];
-
 import { generateZipWithSettings } from './save.js';
 
 window.addEventListener('DOMContentLoaded', () => {
     confirmModal.style.display = 'none';
     blockModal.style.display = 'none';
+    const canvas = document.getElementById('canvas');
+    saveState(canvas.toDataURL()); // 初期状態を履歴の最初に入れる
 });
 
 document.getElementById('addBtn').addEventListener('click', () => {
@@ -287,6 +289,79 @@ function filterBlocks() {
         }
     });
 }
+
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (e.key === 'z') {
+            e.preventDefault();
+            const prevState = undo(canvas.toDataURL());
+            if (prevState) loadDataToCanvas(prevState); // 下記の関数が必要
+        } 
+        else if (e.key === 'y') {
+            e.preventDefault();
+            const nextState = redo(canvas.toDataURL());
+            if (nextState) loadDataToCanvas(nextState);
+        }
+    }
+});
+
+// 履歴から画像データを受け取って描画し直すヘルパー関数
+function loadDataToCanvas(dataUrl) {
+    console.log("復元しようとしているデータ:", dataUrl.substring(0, 30) + "...");
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = () => {
+        console.log("画像ロード完了。描画開始。");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+    };
+    img.src = dataUrl;
+}
+// script.js に書く関数
+function recordAction() {
+    const canvas = document.getElementById('canvas');
+    const state = canvas.toDataURL(); // 今のキャンバスを文字列化
+    saveState(state); // undo_redo.js の関数を呼ぶ
+}
+document.getElementById('undoBtn').addEventListener('click', () => {
+    // 1. まず canvas を取得する
+    const canvas = document.getElementById('canvas');
+    if (!canvas) return; 
+
+    // 2. その後に dataUrl を作る
+    const dataUrl = canvas.toDataURL();
+    
+    console.log("--- Undoボタン押下 ---");
+    console.log("現在のCanvasデータ:", dataUrl.substring(0, 20));
+    
+    // 3. 実行する
+    const prevState = performUndo(dataUrl);
+    
+    if (prevState) {
+        console.log("復元成功！復元データ:", prevState.substring(0, 20));
+        loadDataToCanvas(prevState);
+    } else {
+        console.warn("履歴が見つかりません。Undoスタックは空です。");
+    }
+});
+
+document.getElementById('redoBtn').addEventListener('click', () => {
+    const canvas = document.getElementById('canvas');
+    const nextState = redo(canvas.toDataURL());
+    if (nextState) {
+        loadDataToCanvas(nextState);
+    } else {
+        console.log("これ以上やり直せません");
+    }
+});
+
+// document.getElementById('gridBtn').addEventListener('click', () => {
+//     document.getElementById('canvas-wrapper').classList.toggle('show-grid');
+// });
 
 // 最後に実行
 loadBlockData();
