@@ -37,7 +37,8 @@ async function loadBlockData() {
         blocks.forEach(block => {
             const div = document.createElement('div');
             div.className = 'modal-item';
-            div.innerHTML = `<img src="${block.url}" width="48"><br>${block.name}`;
+            div.setAttribute('data-id', block.id);
+            div.innerHTML = `<img src="${block.url}" width="48"><br><span class="block-name">${block.name}</span>`;
             
             // クリック時に addToInventory を呼ぶだけにする
             div.onclick = () => {
@@ -274,21 +275,22 @@ function updateThumbnail() {
     }
 }
 
-function filterBlocks() {
+window.filterBlocks = function() {
     const query = document.getElementById('blockSearch').value.toLowerCase();
     const items = document.querySelectorAll('.modal-item');
     
     items.forEach(item => {
-        // item の中にあるテキスト（ブロック名）を取得
-        const name = item.textContent.toLowerCase();
-        // 含まれていれば表示、なければ非表示
-        if (name.includes(query)) {
+        const name = item.querySelector('.block-name').textContent.toLowerCase();
+        const id = item.getAttribute('data-id').toLowerCase();
+        
+        // 名前 または ID のどちらかに含まれていれば表示する
+        if (name.includes(query) || id.includes(query)) {
             item.style.display = '';
         } else {
             item.style.display = 'none';
         }
     });
-}
+};
 
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey || e.metaKey) {
