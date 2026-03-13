@@ -80,6 +80,7 @@
 <div id="blockModal" class="modal">
     <div class="modal-content">
         <h2>ブロックを選択</h2>
+        <input type="text" id="blockSearch" placeholder="名前で検索..." oninput="filterBlocks()">
         <div id="blockSelector"></div>
         <button onclick="document.getElementById('blockModal').style.display='none'">閉じる</button>
     </div>

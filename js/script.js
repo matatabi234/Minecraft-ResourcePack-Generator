@@ -11,16 +11,7 @@ const modalExportBtn = document.getElementById('modal-export');
 
 document.getElementById('modal-cancel').onclick = () => modal.style.display = 'none';
 
-document.getElementById('modal-export').onclick = async () => {
-    const packName = document.getElementById('modal-pack-name').value;
-    const format = parseInt(document.getElementById('modal-pack-format').value);
-    
-    // モーダルを閉じる
-    modal.style.display = 'none';
-    
-    // 設定を渡してエクスポートを実行
-    await generateZipWithSettings(packName, format);
-};
+// 【重要】関数の外で取得しておく
 
 export let textureList = [];
 
@@ -40,28 +31,39 @@ async function loadBlockData() {
     try {
         const response = await fetch('data.json');
         const blocks = await response.json();
+        blocks.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
         blocks.forEach(block => {
             const div = document.createElement('div');
             div.className = 'modal-item';
             div.innerHTML = `<img src="${block.url}" width="48"><br>${block.name}`;
+            
+            // クリック時に addToInventory を呼ぶだけにする
             div.onclick = () => {
-                addToInventory(block.name, block.url);
+                addToInventory(block.name, block.url, block.id); 
                 blockModal.style.display = 'none';
             };
+            
             blockSelector.appendChild(div);
         });
-    } catch (e) { console.error("JSON読み込み失敗:", e); }
+    } catch (e) { 
+        console.error("JSON読み込み失敗:", e); 
+    }
 }
 
-function addToInventory(name, imageUrl) {
-    if ([...galleryList.querySelectorAll('.thumb span')].some(s => s.textContent === name)) {
-        alert(name + " は既に追加されています！");
-        return;
-    }
-
+function addToInventory(name, imageUrl, id) {
+    // if ([...galleryList.querySelectorAll('.thumb span')].some(s => s.textContent === name)) {
+    //     alert(name + " は既に追加されています！");
+    //     return;
+    // }
+    // galleryList.appendChild(div);
+    // const div = document.createElement('div');
+    // div.className = 'thumb';
+    // div.dataset.url = imageUrl;
+    // div.dataset.id = id;
     const div = document.createElement('div');
     div.className = 'thumb';
     div.dataset.url = imageUrl;
+    div.dataset.id = id; // idを保持しておく
     
     // リスト形式に合わせたHTML
     div.innerHTML = `
@@ -79,49 +81,27 @@ function addToInventory(name, imageUrl) {
     // 削除ボタンのイベント
     div.querySelector('.delete-btn').onclick = (e) => {
         e.stopPropagation();
-        itemToRemove = { div, imageUrl, name };
+        itemToRemove = { div: e.currentTarget.parentElement, imageUrl, name };
         confirmModal.style.display = 'block';
     };
-    
-    // // 画像をクリックした時のイベント
-    // div.onclick = () => {
-    //     currentImageUrl = imageUrl;
-    //     const event = new CustomEvent('selectTexture', { detail: imageUrl });
-    //     document.dispatchEvent(event);
-    // };
+    div.onclick = (e) => {
+        // e.currentTarget を使うことで div という変数名に依存しなくなる
+        const clickedDiv = e.currentTarget; 
+        
+        document.querySelectorAll('.thumb').forEach(el => el.classList.remove('selected'));
+        clickedDiv.classList.add('selected');
+        selectedDiv = clickedDiv;
 
-    // div.onclick = () => {
-    // // 枠線を外す処理
-    // document.querySelectorAll('.thumb').forEach(el => el.classList.remove('selected'));
+        // データの検索とイベント送信
+        const savedTexture = textureList.find(t => t.name === name);
+        const dataToLoad = savedTexture ? savedTexture.data : imageUrl;
+        document.dispatchEvent(new CustomEvent('selectTexture', { detail: dataToLoad }));
+    };
     
-    // // 選択状態を更新
-    // div.classList.add('selected');
-    // selectedDiv = div; // ← ここで保存！
+galleryList.appendChild(div);
     
-    // // ...以降の処理...
-    // };
-div.onclick = () => {
-    // 1. 枠線の更新処理（既存の処理）
-    document.querySelectorAll('.thumb').forEach(el => el.classList.remove('selected'));
-    div.classList.add('selected');
-    selectedDiv = div;
-
-    // 2. リスト内の編集データを検索
-    const name = div.querySelector('span').textContent;
-    const savedTexture = textureList.find(t => t.name === name);
-    
-    // 3. 編集データがあればそれを、なければ元の画像URLを読み込む
-    // savedTexture.data があれば保存データ、なければ初期の imageUrl を使用
-    const dataToLoad = savedTexture ? savedTexture.data : imageUrl;
-
-    // 4. Paint.js へイベント送信
-    console.log("画像クリック！編集データを反映します:", name);
-    const event = new CustomEvent('selectTexture', { detail: dataToLoad });
-    document.dispatchEvent(event);
-};
-    
-    galleryList.appendChild(div);
-    textureList.push({ name: name, data: imageUrl });
+    // リストへの追加（idを含める）
+    textureList.push({ id: id, name: name, data: imageUrl });
 }
 
 // script.js の 確定ボタン処理 を修正
@@ -164,51 +144,43 @@ toolBtns.forEach(btn => {
 
     // script.js
 document.addEventListener('DOMContentLoaded', () => {
-        const toolBtns = document.querySelectorAll('.tool-btn');
-        const confirmModal = document.getElementById('confirmModal');
-        const confirmYes = document.getElementById('confirmYes');
-        const confirmNo = document.getElementById('confirmNo');
-        const modalCancelBtn = document.getElementById('modal-cancel');
-        // script.js
-        // 1. セーブ用ボタン
-        if (modalCancelBtn) {
-        modalCancelBtn.addEventListener('click', () => {
-            console.log("キャンセルが押されました"); // ここで動作確認できる
-            exportModal.style.display = 'none'; // モーダルを消す
-        });
+    const toolBtns = document.querySelectorAll('.tool-btn');
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmYes = document.getElementById('confirmYes');
+    const confirmNo = document.getElementById('confirmNo');
+    const modalCancelBtn = document.getElementById('modal-cancel');
+    // script.js
+    // 1. セーブ用ボタン
+    if (modalCancelBtn) {
+    modalCancelBtn.addEventListener('click', () => {
+        console.log("キャンセルが押されました"); // ここで動作確認できる
+        exportModal.style.display = 'none'; // モーダルを消す
+    });
     }
     document.getElementById('saveBtn').addEventListener('click', () => {
-        if (!selectedDiv) {
-            alert("保存するブロックを選択してください！");
-            return;
-        }
+            if (!selectedDiv) {
+                alert("保存するブロックを選択してください！");
+                return;
+            }
 
-        const canvas = document.getElementById('canvas');
-        const imageData = canvas.toDataURL("image/png");
-        
-        // 選択中のブロックの名前を取得
-        const name = selectedDiv.querySelector('span').textContent;
+            const canvas = document.getElementById('canvas');
+            const imageData = canvas.toDataURL("image/png");
+            const name = selectedDiv.querySelector('span').textContent;
 
-        // リストの中に既にあれば更新、なければ追加
         const index = textureList.findIndex(t => t.name === name);
         if (index !== -1) {
             textureList[index].data = imageData;
         } else {
-            textureList.push({ name: name, data: imageData });
+            textureList.push({ id: selectedDiv.dataset.id, name: name, data: imageData });
         }
-    if (selectedDiv) {
-        const imgElement = selectedDiv.querySelector('img');
-        if (imgElement) {
-            imgElement.src = imageData; // 保存したCanvasの画像データで上書き
-        }
-    }
+        updateThumbnail(imageData); 
     
-    alert(name + " を保存しました！");
+        alert(name + " を保存しました！");
     });
 
-    document.getElementById('exportBtn').addEventListener('click', () => {
-        exportModal.style.display = 'block'; // ここで modal ではなく exportModal を使う
-    });
+document.getElementById('exportBtn').addEventListener('click', () => {
+    exportModal.style.display = 'block'; // ここで modal ではなく exportModal を使う
+});
     document.getElementById('modal-export').addEventListener('click', () => {
     const packName = document.getElementById('modal-pack-name').value;
     const format = parseInt(document.getElementById('modal-pack-format').value);
@@ -300,18 +272,21 @@ function updateThumbnail() {
     }
 }
 
-modalExportBtn.addEventListener('click', () => {
-    // ユーザーが入力した値を取得
-    const packName = document.getElementById('modal-pack-name').value;
-    const format = parseInt(document.getElementById('modal-pack-format').value);
-
-    // モーダルを閉じる
-    exportModal.style.display = 'none';
-
-    // 取得した値を引数にして、save.js の関数を呼び出す
-    // textureList はグローバル変数として持っている前提です
-    generateZipWithSettings(packName, format);
-});
+function filterBlocks() {
+    const query = document.getElementById('blockSearch').value.toLowerCase();
+    const items = document.querySelectorAll('.modal-item');
+    
+    items.forEach(item => {
+        // item の中にあるテキスト（ブロック名）を取得
+        const name = item.textContent.toLowerCase();
+        // 含まれていれば表示、なければ非表示
+        if (name.includes(query)) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
 
 // 最後に実行
 loadBlockData();
