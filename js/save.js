@@ -1,19 +1,28 @@
 export async function generateZipWithSettings(name, format, list) {
-    const response = await fetch('data.json');
-    const allBlocks = await response.json();
     const zip = new JSZip();
 
-    if (!list) return;
+    const response = await fetch('data.json');
+    const allBlocks = await response.json();
 
-    // 各項目を処理
-    const filePromises = allBlocks.map(async (item) => {
-        const edited = list.find(t => t.id === item.id);
-        const dataUrl = edited ? edited.data : item.url;
+    // 1. 空チェック
+    if (!list || list.length === 0) {
+        alert("テクスチャが選択されていません");
+        return;
+    }
+
+    // 2. 選択されたリストだけを処理
+    const filePromises = list.map(async (item) => {
+        const dataUrl = item.data;
         if (!dataUrl) return;
 
-        // カテゴリ名からフォルダ名を決定 (複数形を単数形に)
-        // blocks -> block, items -> item
-        const categoryDir = item.category === 'blocks' ? 'block' : 'item';
+        // 2. data.json の中から現在の item.id に一致するデータを探す
+        const originalData = allBlocks.find(b => b.id === item.id);
+        
+        // 3. カテゴリ情報を originalData から取得 (なければデフォルトで 'item')
+        let category = originalData ? originalData.category : 'items';
+        
+        // 4. パス変換
+        let categoryDir = (category === 'blocks') ? 'block' : 'item';
         const folder = zip.folder(`assets/minecraft/textures/${categoryDir}`);
 
         if (dataUrl.includes('base64,')) {
@@ -32,7 +41,7 @@ export async function generateZipWithSettings(name, format, list) {
 
     await Promise.all(filePromises);
 
-    // pack.mcmeta 作成
+    // 3. pack.mcmeta 作成
     const packMcmeta = {
         "pack": {
             "pack_format": format,
@@ -42,6 +51,7 @@ export async function generateZipWithSettings(name, format, list) {
     };
     zip.file("pack.mcmeta", JSON.stringify(packMcmeta, null, 2));
 
+    // 4. ダウンロード実行
     const content = await zip.generateAsync({ type: "blob" });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(content);
