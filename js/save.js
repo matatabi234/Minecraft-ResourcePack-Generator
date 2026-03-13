@@ -43,7 +43,6 @@ allBlocks.forEach(block => {
     const packMcmeta = {
         "pack": {
             "pack_format": format,
-            "supported_formats": [format, 75],
             "description": "Custom Pack"
         }
     };
