@@ -36,7 +36,6 @@ export async function generateZipWithSettings(name, format, list) {
     const packMcmeta = {
         "pack": {
             "pack_format": format,
-            "supported_formats": [format, 75],
             "description": "Custom Pack"
         }
     };
