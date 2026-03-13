@@ -1,45 +1,38 @@
-// save.js の中
-// 引数に list を追加
 export async function generateZipWithSettings(name, format, list) {
     const response = await fetch('data.json');
-    const allBlocks = await response.json(); // 全リスト
+    const allBlocks = await response.json();
     const zip = new JSZip();
-    const folder = zip.folder("assets/minecraft/textures");
+
     if (!list) return;
 
-allBlocks.forEach(block => {
-    // 1. 編集データがあるか確認
-    const edited = list.find(t => t.id === block.id);
-    const dataUrl = edited ? edited.data : block.url;
+    // 各項目を処理
+    const filePromises = allBlocks.map(async (item) => {
+        const edited = list.find(t => t.id === item.id);
+        const dataUrl = edited ? edited.data : item.url;
+        if (!dataUrl) return;
 
-    // 2. Base64 データの抽出
-    if (dataUrl && dataUrl.includes('base64,')) {
-        // 編集されたデータがある場合
-        const base64Data = dataUrl.split(',')[1];
-        folder.file(`${block.id}.png`, base64Data, { base64: true });
-    } else if (dataUrl && !dataUrl.startsWith('data:')) {
-        // 初期画像(URL)の場合: JSZipに渡すには fetch が必要
-        fetch(dataUrl)
-            .then(res => res.blob())
-            .then(blob => {
-                // ファイルとして追加
-                // folder.file(`${block.category}/${block.id}.png`, blob);
-                folder.file(`${block.id}.png`, blob);
-            })
-            .catch(err => console.error("画像取得失敗:", err));
-    }
-});
+        // カテゴリ名からフォルダ名を決定 (複数形を単数形に)
+        // blocks -> block, items -> item
+        const categoryDir = item.category === 'blocks' ? 'block' : 'item';
+        const folder = zip.folder(`assets/minecraft/textures/${categoryDir}`);
 
-    list.forEach((t) => {
-        // データがある場合だけ処理する
-        if (t.data && t.data.includes(',')) {
-            const base64Data = t.data.split(',')[1];
-            folder.file(`${t.category}/${t.id}.png`, base64Data, { base64: true });
+        if (dataUrl.includes('base64,')) {
+            const base64Data = dataUrl.split(',')[1];
+            folder.file(`${item.id}.png`, base64Data, { base64: true });
         } else {
-            console.warn(`${t.name} は有効な画像データを持っていません`);
+            try {
+                const res = await fetch(dataUrl);
+                const blob = await res.blob();
+                folder.file(`${item.id}.png`, blob);
+            } catch (err) {
+                console.error("画像取得失敗:", item.id, err);
+            }
         }
     });
 
+    await Promise.all(filePromises);
+
+    // pack.mcmeta 作成
     const packMcmeta = {
         "pack": {
             "pack_format": format,
