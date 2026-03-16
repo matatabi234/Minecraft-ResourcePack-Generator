@@ -480,3 +480,76 @@ button:hover {
     position: relative;
     image-rendering: pixelated; /* ドットをぼかさない */
 }
+
+.main-wrapper {
+    display: flex; /* 横並びにする */
+    height: 100vh;
+}
+
+#control-panel {
+    width: 80px; /* パネルの幅 */
+}
+
+.canvas-container {
+    flex-grow: 1; /* 残りのスペースを全部使う */
+}
+
+#ad-panel-right {
+    width: 250px; /* 右側の広告エリアの幅 */
+    padding: 10px;
+    background-color: #1e1e1e;
+    border-left: 1px solid #444;
+}
+
+#ad-panel-right .ad-section {
+    display: flex;         /* 横並びにする */
+    overflow-x: auto;      /* 横スクロールを許可 */
+    scroll-snap-type: x mandatory; /* スクロール位置を吸着させる */
+    gap: 10px;             /* 広告同士の隙間 */
+    padding: 10px;
+    white-space: nowrap;   /* 改行させない */
+}
+
+#ad-panel-right .ad-section a {
+    scroll-snap-align: start; /* スクロールした時に広告の端で止まる */
+    flex: 0 0 auto;        /* 広告がギュッと縮まないようにする */
+}
+
+#ad-panel-right {
+    width: 300px; /* スライドが見やすいように少し広げる */
+}
+
+.privacy {
+    margin-top: auto;
+    /* position: fixed; */
+    bottom: 0;
+    left: 0;
+    text-align: center;
+}
+
+#main-wrapper {
+    /* 必要ならここでもFlexboxで中身を横並びにする */
+    display: flex; 
+}
+
+footer {
+    grid-row: 2;
+    text-align: center;
+    padding: 20px;
+    background: #222; /* 黒っぽい背景にして見やすく */
+    color: white;
+}
+
+#ad-panel-right {
+    display: flex;         /* フレックスボックス化 */
+    flex-direction: column; /* 縦に並べる（重要！） */
+    justify-content: flex-start; /* 要素を一番下に寄せる（重要！） */
+    padding: 10px;
+    height: 100%;          /* 親要素の高さまで広げる */
+}
+
+.ad-section {
+    display: flex;
+    flex-direction: column; /* 中の広告も縦に並べる */
+    gap: 15px;              /* 広告同士の隙間をあける */
+}
