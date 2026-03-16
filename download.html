@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Download</title>
+
+<!-- admax -->
+<script src="https://adm.shinobi.jp/s/38dc8dc19c0bda86e505431fb00adc92"></script>
+<!-- admax -->
+
+</head>
+
+<body>
+
+<h2>ZIPが生成されました</h2>
+
+<button id="downloadBtn">ダウンロード</button>
+
+<script>
+const url = sessionStorage.getItem("generatedZip");
+const name = sessionStorage.getItem("zipName");
+
+document.getElementById("downloadBtn").onclick = () => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+};
+</script>
+<br><br><br><br>
+<script src="https://adm.shinobi.jp/s/abbd57f9468e61b49f641df0411cacf2"></script>
+<script src="https://adm.shinobi.jp/s/abbd57f9468e61b49f641df0411cacf2"></script>
+<script src="https://adm.shinobi.jp/s/abbd57f9468e61b49f641df0411cacf2"></script>
+<script src="https://adm.shinobi.jp/s/abbd57f9468e61b49f641df0411cacf2"></script>
+<script src="https://adm.shinobi.jp/s/abbd57f9468e61b49f641df0411cacf2"></script>
+</body>
+</html>

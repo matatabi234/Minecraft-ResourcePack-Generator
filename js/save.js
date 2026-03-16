@@ -52,9 +52,23 @@ export async function generateZipWithSettings(name, format, list) {
     zip.file("pack.mcmeta", JSON.stringify(packMcmeta, null, 2));
 
     // 4. ダウンロード実行
+    // const content = await zip.generateAsync({ type: "blob" });
+    // const link = document.createElement('a');
+    // link.href = URL.createObjectURL(content);
+    // link.download = `${name}.zip`;
+    // link.click();
+    // js/save.js
+
     const content = await zip.generateAsync({ type: "blob" });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(content);
-    link.download = `${name}.zip`;
-    link.click();
-}
+
+    // 一時保存
+    const url = URL.createObjectURL(content);
+
+    // sessionStorageに保存
+    sessionStorage.setItem("generatedZip", url);
+    sessionStorage.setItem("zipName", `${name}.zip`);
+
+    setTimeout(()=>{
+    location.href="generating.html";
+    },1000);
+    }
