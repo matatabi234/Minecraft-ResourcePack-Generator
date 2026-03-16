@@ -572,3 +572,12 @@ footer {
     max-width: 100%;         /* 親要素の幅を超えない */
     height: auto;            /* 比率を維持 */
 }
+
+#ad-panel-right {
+    width: 320px;          /* 横幅を固定 */
+    height: 100vh;         /* 画面全体の高さを基準にする */
+    overflow-y: auto;      /* はみ出た分をスクロールさせる（重要！） */
+    position: sticky;      /* 必要であればスクロールしても右側に固定可能 */
+    top: 0;
+    padding: 10px;
+}
