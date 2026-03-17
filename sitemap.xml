@@ -1,8 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+if (url.pathname === "/sitemap.xml") {
+  return new Response(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>https://minecraft-resource-pack-generator.matatabi234.workers.dev/</loc>
+<changefreq>daily</changefreq>
+<priority>1.0</priority>
 </url>
 
 <url>
@@ -13,16 +16,9 @@
 <loc>https://minecraft-resource-pack-generator.matatabi234.workers.dev/about.html</loc>
 </url>
 
-<url>
-<loc>https://minecraft-resource-pack-generator.matatabi234.workers.dev/generating.html</loc>
-</url>
-
-<url>
-<loc>https://minecraft-resource-pack-generator.matatabi234.workers.dev/howto.html</loc>
-</url>
-
-<url>
-<loc>https://minecraft-resource-pack-generator.matatabi234.workers.dev/privacy.html</loc>
-</url>
-
-</urlset>
+</urlset>`, {
+    headers: {
+      "Content-Type": "application/xml"
+    }
+  });
+}
